@@ -24,7 +24,7 @@ struct ContentView: View {
     }
   }
   
-  private func mainView(_ item: NewsDataModel) -> some View {
+  private func mainView(_ item: Article) -> some View {
     HStack(spacing: 10) {
       imageView(item)
       titleView(item)
@@ -36,8 +36,8 @@ struct ContentView: View {
   }
   
   @ViewBuilder
-  private func imageView(_ item: NewsDataModel) -> some View {
-    AsyncImage(url: item.imageURL ?? URL(string: "")) { image in
+  private func imageView(_ item: Article) -> some View {
+    AsyncImage(url: URL(string: item.urlToImage ?? "")) { image in
       image
         .resizable()
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -51,11 +51,11 @@ struct ContentView: View {
     }
   }
   
-  private func titleView(_ item: NewsDataModel) -> some View {
+  private func titleView(_ item: Article) -> some View {
     VStack(alignment: .leading, spacing: 5) {
       Text(item.title)
         .font(.subheadline)
-      Text(item.subtitle)
+      Text(item.description ?? "")
         .font(.caption)
     }
   }

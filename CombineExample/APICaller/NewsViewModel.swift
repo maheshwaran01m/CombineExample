@@ -8,23 +8,9 @@
 import Foundation
 import Combine
 
-class NewsDataModel: Identifiable {
-  var id: String { UUID().uuidString }
-  
-  let title: String
-  let subtitle: String
-  let imageURL: URL?
-  
-  init(title: String, subtitle: String, imageURL: URL?) {
-    self.title = title
-    self.subtitle = subtitle
-    self.imageURL = imageURL
-  }
-}
-
 class NewsViewModel: ObservableObject, Identifiable {
   
-  @Published var news: [NewsDataModel] = []
+  @Published var news: [Article] = []
   @Published var searchText = ""
   
   var cancelBag = Set<AnyCancellable>()
@@ -47,9 +33,7 @@ class NewsViewModel: ObservableObject, Identifiable {
           print(error.localizedDescription)
         }
       } receiveValue: { [weak self] news in
-        self?.news = news.compactMap {
-          .init(title: $0.title, subtitle: $0.description ?? "",
-                imageURL: URL(string: $0.urlToImage ?? ""))}
+        self?.news = news
       }
       .store(in: &cancelBag)
   }
@@ -65,17 +49,6 @@ class NewsViewModel: ObservableObject, Identifiable {
       .switchToLatest()
       .map(\.articles)
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { result in
-        switch result {
-        case .finished: ()
-        case .failure(let error):
-          print(error.localizedDescription)
-        }
-      }, receiveValue: { [weak self] news in
-        self?.news = news.compactMap {
-          .init(title: $0.title, subtitle: $0.description ?? "",
-                imageURL: URL(string: $0.urlToImage ?? "")) }
-      })
-      .store(in: &cancelBag)
+      .assign(to: &$news)
   }
 }
