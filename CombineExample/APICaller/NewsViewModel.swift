@@ -15,27 +15,8 @@ class NewsViewModel: ObservableObject, Identifiable {
   
   var cancelBag = Set<AnyCancellable>()
   
-  var isFromHeadLine = false
-  
-  init(isFromHeadLine: Bool = false) {
-    self.isFromHeadLine = isFromHeadLine
+  init() {
     setupSearch()
-  }
-  
-  func fetchNews(_ newURL: APICaller.NewsResult = .topHeadline) {
-    APICaller.shared.fetchNews(newsURL: newURL)
-      .map(\.articles)
-      .receive(on: DispatchQueue.main)
-      .sink {  result in
-        switch result {
-        case .finished: ()
-        case .failure(let error):
-          print(error.localizedDescription)
-        }
-      } receiveValue: { [weak self] news in
-        self?.news = news
-      }
-      .store(in: &cancelBag)
   }
   
   func setupSearch() {
@@ -43,7 +24,7 @@ class NewsViewModel: ObservableObject, Identifiable {
       .debounce(for: 0.3, scheduler: DispatchQueue.main)
       .map { $0.lowercased() }
       .map { searchText in
-        APICaller.shared.fetchNews(newsURL: .search(self.isFromHeadLine, searchText))
+        APICaller.shared.fetchNews(for: searchText)
           .replaceError(with: .init(articles: []))
       }
       .switchToLatest()
