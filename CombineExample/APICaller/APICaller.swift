@@ -17,10 +17,11 @@ final class APICaller {
   // MARK: - Fetch News Details
   
   func fetchNews(for searchText: String) -> some Publisher<APIRespone, Error> {
-    let topHeadlinesURL = "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=---Enter-API-Key----"
+    let urlString = "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=---Enter-API-Key----"
+    
     let search = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
     
-    guard let url = URL(string: topHeadlinesURL + "&q=\(search)") else {
+    guard let url = URL(string: urlString + "&q=\(search)") else {
       return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
     }
     return URLSession
