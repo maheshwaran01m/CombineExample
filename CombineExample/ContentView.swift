@@ -20,6 +20,7 @@ struct ContentView: View {
         .padding(.horizontal, 10)
       }
       .searchable(text: $viewModel.searchText)
+      .onSubmit(of: .search, viewModel.setupSearch)
       .navigationTitle("News")
     }
   }

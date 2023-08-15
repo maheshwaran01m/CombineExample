@@ -16,12 +16,26 @@ final class APICaller {
   
   // MARK: - Fetch News Details
   
+  var topHeadlinesURL: String {
+    "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=---Enter-API-Key----"
+  }
+  
+  func fetchNews() -> some Publisher<APIRespone, Error> {
+    guard let url = URL(string: topHeadlinesURL) else {
+      return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
+    }
+    return URLSession
+      .shared
+      .dataTaskPublisher(for: url)
+      .map(\.data)
+      .decode(type: APIRespone.self, decoder: customDecoder)
+      .eraseToAnyPublisher()
+  }
+  
   func fetchNews(for searchText: String) -> some Publisher<APIRespone, Error> {
-    let urlString = "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=---Enter-API-Key----"
-    
     let search = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
     
-    guard let url = URL(string: urlString + "&q=\(search)") else {
+    guard let url = URL(string: topHeadlinesURL + "&q=\(search)") else {
       return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
     }
     return URLSession

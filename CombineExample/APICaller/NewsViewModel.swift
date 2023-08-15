@@ -16,7 +16,23 @@ class NewsViewModel: ObservableObject, Identifiable {
   var cancelBag = Set<AnyCancellable>()
   
   init() {
-    setupSearch()
+    fetchNews()
+  }
+  
+  func fetchNews() {
+    APICaller.shared.fetchNews()
+      .map(\.articles)
+      .receive(on: DispatchQueue.main)
+      .sink {  result in
+        switch result {
+        case .finished: ()
+        case .failure(let error):
+          print(error.localizedDescription)
+        }
+      } receiveValue: { [weak self] news in
+        self?.news = news
+      }
+      .store(in: &cancelBag)
   }
   
   func setupSearch() {
