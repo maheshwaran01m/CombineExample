@@ -44,6 +44,7 @@ struct ContentView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .frame(width: 100, height: 100)
     } placeholder: {
+      
       Image(systemName: "photo.artframe")
         .resizable()
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -56,6 +57,7 @@ struct ContentView: View {
     VStack(alignment: .leading, spacing: 5) {
       Text(item.title)
         .font(.subheadline)
+      
       Text(item.description ?? "")
         .font(.caption)
     }
